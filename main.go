@@ -7,5 +7,6 @@ package main
 import "github.com/stacklok/dummyrepo-go/cmd"
 
 func main() {
+	// test
 	cmd.Execute()
 }
