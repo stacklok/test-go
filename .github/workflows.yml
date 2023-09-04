@@ -1,26 +1,27 @@
-name: Go Build
+name: PR Size Labeler
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
-    branches: [ main ]
+    types: [opened, synchronize]
 
 jobs:
-  build:
+  labeler:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Setup Go environment
-      uses: actions/setup-go@v2
+    - name: Dump GitHub context
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: echo "$GITHUB_CONTEXT"
+
+    - name: PR Size Labeler
+      uses: lukehinds/label-pr-size@v0.0.8
+      env:
+        BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        HEAD_SHA: ${{ github.event.pull_request.head.sha }}
       with:
-        go-version: 1.20
-
-    - name: Build
-      run: go build -v ./...
-
-    - name: Test
-      run: go test -v ./...
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        repository: ${{ github.repository }}
+        pr-number: ${{ github.event.pull_request.number }}
